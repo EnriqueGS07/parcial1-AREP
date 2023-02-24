@@ -77,7 +77,7 @@ public class HttpServer {
                 Class<?> clase = Class.forName(request.split("\\(")[1].split(",")[0]);
                 Method[] metodos = clase.getMethods();
                 for (Method m: metodos) {
-                    if(m.getName().equals(request.split("\\(")[1].split(",")[1].split("\\)")[0])){
+                    if(m.getName().equals(request.split("\\(")[1].split(",%20")[1].split("\\)")[0])){
                         Object ret = m.invoke(null);
                         outputLine = "HTTP/1.1 200 OK\r\n"
                                 + "Content-Type: text/html\r\n"
@@ -103,6 +103,14 @@ public class HttpServer {
                     }
                 }
             }
+            else if(request.split("\\(")[0].equals("unaryInvoke")){
+                Class<?> clase = Class.forName(request.split("\\(")[1].split(",")[0]);
+                String meth = request.split("\\(")[1].split(",%20")[1];
+                String type = request.split("\\(")[1].split(",%20")[2];
+                String val = request.split("\\(")[1].split(",%20")[3];
+                System.out.println(meth+" " +type +" " + val );
+            }
+
             else{
                 outputLine = "HTTP/1.1 200 OK\r\n"
                         + "Content-Type: text/html\r\n"
