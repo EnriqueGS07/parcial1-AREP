@@ -74,10 +74,10 @@ public class HttpServer {
                         "</html>";
             }
             else if(request.split("\\(")[0].equals("invoke")){
-                Class<?> clase = Class.forName(request.split("\\(\\[")[1].split("],")[0]);
+                Class<?> clase = Class.forName(request.split("\\(")[1].split(",")[0]);
                 Method[] metodos = clase.getMethods();
                 for (Method m: metodos) {
-                    if(m.getName().equals(request.split("\\(\\[")[1].split("\\[")[1].split("]\\)")[0])){
+                    if(m.getName().equals(request.split("\\(")[1].split(",")[1].split("\\)")[0])){
                         Object ret = m.invoke(null);
                         outputLine = "HTTP/1.1 200 OK\r\n"
                                 + "Content-Type: text/html\r\n"
