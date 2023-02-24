@@ -107,10 +107,99 @@ public class HttpServer {
                 Class<?> clase = Class.forName(request.split("\\(")[1].split(",")[0]);
                 String meth = request.split("\\(")[1].split(",%20")[1];
                 String type = request.split("\\(")[1].split(",%20")[2];
-                String val = request.split("\\(")[1].split(",%20")[3];
-                System.out.println(meth+" " +type +" " + val );
+                String val = request.split("\\(")[1].split(",%20")[3].split("\\)")[0];
+                Object valor = null;
+                if(Objects.equals(type, "int")){
+                    valor = Integer.parseInt(val);
+                } else if (type.equals("String")) {
+                    valor = val;
+                }
+                Method[] metodos = clase.getMethods();
+                for (Method m: metodos) {
+                    if(m.getName().equals(request.split("\\(")[1].split(",%20")[1])){
+                        
+                        Object ret = m.invoke(null, valor);
+                        outputLine = "HTTP/1.1 200 OK\r\n"
+                                + "Content-Type: text/html\r\n"
+                                + "\r\n" +
+                                "<!DOCTYPE html>"+
+                                "<html>"+
+                                "<head>"+
+                                "<title>chatGPT</title>\n"+
+                                "<meta charset=\"UTF-8\">\n"+
+                                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"+
+                                "</head>\n"+
+                                "<body>\n"+
+                                "<h1>CHAT gpt2</h1>\n"+
+                                "<form action=\"/chat\">\n"+
+                                "    <label for=\"name\">metodo:</label><br>\n"+
+                                "    <input type=\"text\" id=\"name\" name=\"name\" value=\"\"><br><br>\n"+
+                                "</form>\n"+
+                                "<div id=\"getrespmsg\">" +
+                                "Resultado: " + ret.toString() +
+                                "</div>\n"+
+                                "</body>\n"+
+                                "</html>";
+                    }
+                }
             }
+            else if(request.split("\\(")[0].equals("binaryInvoke")){
+                Class<?> clase = Class.forName(request.split("\\(")[1].split(",")[0]);
+                String meth = request.split("\\(")[1].split(",%20")[1];
+                String type = request.split("\\(")[1].split(",%20")[2];
+                String val1 = request.split("\\(")[1].split(",%20")[3];
+                String type2 = request.split("\\(")[1].split(",%20")[4];
+                String val2 = request.split("\\(")[1].split(",%20")[5].split("\\)")[0];
+                Object valor = null;
+                Object valor2 = null;
+                System.out.println(meth + type + val1 + type2 + val2);
+                if(Objects.equals(type, "int")){
+                    valor = Integer.parseInt(val1);
+                } else if (type.equals("String")) {
+                    valor = val1;
+                } else if (type2.equals("double")) {
+                    valor = Double.parseDouble(val1);
+                }
+                if(Objects.equals(type2, "int")){
+                    valor2 = Integer.parseInt(val2);
+                } else if (type2.equals("String")) {
+                    valor2 = val2;
+                } else if (type2.equals("double")) {
+                    valor2 = Double.parseDouble(val2);
+                }
+                Object[] vals = new Object[2];
+                vals[0] = valor;
+                vals[1] = valor2;
+                System.out.println();
+                Method[] metodos = clase.getMethods();
+                for (Method m: metodos) {
+                    if(m.getName().equals(request.split("\\(")[1].split(",%20")[1])){
 
+                        Object ret = m.invoke(null, vals);
+                        outputLine = "HTTP/1.1 200 OK\r\n"
+                                + "Content-Type: text/html\r\n"
+                                + "\r\n" +
+                                "<!DOCTYPE html>"+
+                                "<html>"+
+                                "<head>"+
+                                "<title>chatGPT</title>\n"+
+                                "<meta charset=\"UTF-8\">\n"+
+                                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"+
+                                "</head>\n"+
+                                "<body>\n"+
+                                "<h1>CHAT gpt2</h1>\n"+
+                                "<form action=\"/chat\">\n"+
+                                "    <label for=\"name\">metodo:</label><br>\n"+
+                                "    <input type=\"text\" id=\"name\" name=\"name\" value=\"\"><br><br>\n"+
+                                "</form>\n"+
+                                "<div id=\"getrespmsg\">" +
+                                "Resultado: " + ret.toString() +
+                                "</div>\n"+
+                                "</body>\n"+
+                                "</html>";
+                    }
+                }
+            }
             else{
                 outputLine = "HTTP/1.1 200 OK\r\n"
                         + "Content-Type: text/html\r\n"
@@ -126,14 +215,5 @@ public class HttpServer {
     }
 
 
-    public void unaryInvokeMethod(String className, String methodName) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException {
-        Class<?> clase = Class.forName(className);
-        Method[] metodos = clase.getMethods();
-        for (Method m: metodos) {
-            if(m.getName().equals(methodName)){
-                m.invoke(null);
-            }
-        }
-    }
 
 }
