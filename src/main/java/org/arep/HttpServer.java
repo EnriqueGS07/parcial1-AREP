@@ -77,9 +77,29 @@ public class HttpServer {
                 Class<?> clase = Class.forName(request.split("\\(\\[")[1].split("],")[0]);
                 Method[] metodos = clase.getMethods();
                 for (Method m: metodos) {
-                    if(m.getName().equals(request.split("\\(\\[")[1].split("\\[")[0].split("]")[1])){
-                        System.out.println("SISISISIISI");
-                        m.invoke(null);
+                    if(m.getName().equals(request.split("\\(\\[")[1].split("\\[")[1].split("]\\)")[0])){
+                        Object ret = m.invoke(null);
+                        outputLine = "HTTP/1.1 200 OK\r\n"
+                                + "Content-Type: text/html\r\n"
+                                + "\r\n" +
+                                "<!DOCTYPE html>"+
+                                "<html>"+
+                                "<head>"+
+                                "<title>chatGPT</title>\n"+
+                                "<meta charset=\"UTF-8\">\n"+
+                                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"+
+                                "</head>\n"+
+                                "<body>\n"+
+                                "<h1>CHAT gpt2</h1>\n"+
+                                "<form action=\"/chat\">\n"+
+                                "    <label for=\"name\">metodo:</label><br>\n"+
+                                "    <input type=\"text\" id=\"name\" name=\"name\" value=\"\"><br><br>\n"+
+                                "</form>\n"+
+                                "<div id=\"getrespmsg\">" +
+                                "Resultado: " + ret.toString() +
+                                "</div>\n"+
+                                "</body>\n"+
+                                "</html>";
                     }
                 }
             }
@@ -97,22 +117,6 @@ public class HttpServer {
 
     }
 
-    public String classMethod(String className) throws ClassNotFoundException {
-        Class<?> clase = Class.forName(className);
-        Method[] metodos = clase.getMethods();
-        Field[] campos = clase.getFields();
-        return "Metodos: " + Arrays.toString(metodos) + "Campos: " + Arrays.toString(campos);
-    }
-
-    public void invokeMethod(String className, String methodName) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException {
-        Class<?> clase = Class.forName(className);
-        Method[] metodos = clase.getMethods();
-        for (Method m: metodos) {
-            if(m.getName().equals(methodName)){
-                m.invoke(null);
-            }
-        }
-    }
 
     public void unaryInvokeMethod(String className, String methodName) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException {
         Class<?> clase = Class.forName(className);
